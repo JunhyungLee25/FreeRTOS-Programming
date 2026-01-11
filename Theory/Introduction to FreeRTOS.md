@@ -2,19 +2,19 @@
 
 실제로 물리적인 CPU는 하나이다.
 태스크는 가상의 CPU를 각자 가지고 있는 것 처럼 동작한다.
-![](images/Pasted_image_20260110190128.png)
+![](images/Pasted_image_20260111210958.png)
 시간을 분할하여 사용할 수 있도록 해준다.
 물리적으로 하나의 CPU는 한 번에 하나의 명령어만 처리할 수 있기 때문에, 시분할 기법을 사용하여 여러 태스크를 아주 짧은 시간 간격으로 실행하여 동시에 돌아가는것처럼 보이게 한다.
 
 ## 태스크간의 통신(IPC)
 
 태스크 A와 태스크 B는 커널 서비스인 Inter-process communication을 이용해 통신한다.
-![](images/Pasted_image_20260110190737.png)
+![](images/Pasted_image_20260111211007.png)
 
 ## 태스크 상태
 
 멀티 태스킹 환경에서 커널은 실행 중에 상태를 계속 변경한다.
-![](images/Pasted_image_20260110190804.png)
+![](images/Pasted_image_20260111211024.png)
 
 running: execute
 blocked: not execute. sleep=waiting.  
@@ -32,11 +32,11 @@ ready: not execute. 아직 자신의 차례가 오지 않음.
 - 가장 높은 우선순위의 task가 CPU를 점유하여 수행될 수 있음
 - 시스템 응답성이 중요한 경우 사용됨
 - 실시간 운영체제에서 사용하는 구조임
-![](images/Pasted_image_20260110191440.png)
+![](images/Pasted_image_20260111211038.png)
 	인터럽트가 High-priority Task를 깨우면 그 즉시 동작함
 ## 비선점형 커널
 
-![](images/Pasted_image_20260110191631.png)
+![](images/Pasted_image_20260111211100)
 	인터럽트는 High-priority Task를 깨워도 즉시 동작하지 않음.
 - **타임 퀀텀(Time Quantum)** 은 프로세스가 CPU를 사용할 수 있도록 부여받은 '최대 시간'을 의미하지만, 비선점형의 특성상 이 시간이 지났다고 해서 OS가 강제로 CPU를 뺏어올 수 없다. -> 타임 퀀텀이 종료되더라도, 현재 실행 중인 프로세스가 스스로 CPU를 반납(Yield)하거나 I/O 작업을 위해 대기 상태로 들어가지 않는 한, 커널은 CPU를 **강제로 뺏을 수 없다.**
 
@@ -46,7 +46,7 @@ ready: not execute. 아직 자신의 차례가 오지 않음.
 - 각 태스크들이 점유하는 시간을 타임퀀텀이라고 한다.
 	타임퀀텀의 크기는 특별히 정해지지 않으나 대략 1ms~20ms를 많이 사용한다. -> 타임퀀텀이 너무 짧으면 문맥 전환을 위한 시간 자원의 낭비가 심하다.
 	하지만 어플리케이션이 단순한 비선점형 스케쥴링만을 필요로 할 경우 최적임
-	![](images/Pasted_image_20260110192251.png)
+	![](images/Pasted_image_20260111211126.png)
 	
 
 ## Priority 스케쥴링
@@ -54,7 +54,7 @@ ready: not execute. 아직 자신의 차례가 오지 않음.
 
 - 실시간 운영체제(RTOS)에서 필수적으로 지원하는 스케쥴링 방법이다.
 - 선점형 스케쥴링의 특성을 부여받음.
-	![](images/Pasted_image_20260110192447.png)
+	![](images/Pasted_image_20260111211136.png)
 	우선순위가 높은 task가 생기면 무조건 cpu 점유함(선점형 커널 시)
 
 ## 인터럽트
@@ -63,7 +63,7 @@ ready: not execute. 아직 자신의 차례가 오지 않음.
 - 인터럽트 발생 시 문맥을 저장하고 ISR로 점프
 - 활성, 비활성화 가능 -> 비활성화 시간은 가능한 짧게 해야한다.
 - 지연시간: 외부 하드웨어에서 인터럽트 신호가 발생한 시점부터, CPU가 해당 인터럽트를 처리하는 루틴(ISR)의 첫 번째 명령어를 실행하기까지 걸리는 시간을 의미한다.  -> 비활성화 최대시간 + ISR 최초 명령시간
-	![](images/Pasted_image_20260110193123.png)
+	![](images/Pasted_image_20260111211200.png)
 
 - 인터럽트 비활성화 하는법
 	1. CPU가 마스킹을 통해 인터럽트 요청 보류(pending)됨. 마스킹 해제되면 시작됨
@@ -72,12 +72,12 @@ ready: not execute. 아직 자신의 차례가 오지 않음.
 ## Blocking I/O
 >Blocking I/O 동작은 태스크가 시스템콜을 호출했으나 점유하고자 하는 데이터가 즉시 가용하지 않을 경우 그 동작이 완료될 떄 까지 suspending(blocked) 상태로 유지되는 것을 말함
 
-![](images/Pasted_image_20260110193904.png)
+![](images/Pasted_image_20260111211216.png)
 
 ## Non-Blocking I/O
 >Non-Blocing I/O 동작은 태스크가 시스템콜을 호출 했으나 점유하고자 하는 데이터가 즉시 가용하지 않을 경우 즉각 리턴하는 것
 
-![](images/Pasted_image_20260110200217.png)
+![](images/Pasted_image_20260111211228.png)
 
 ### Blocking vs Non-Blocking
 Blocking 장점: cpu를 사용하지 않는 휴면상태에 들어가 입력을 기다릴 수 있다.
@@ -94,7 +94,7 @@ Non-Blocking 단점: 휴면상태로 들어가 기다리지 않고 계속 함수
 - 클럭 틱 단위 정확도로 지연가능한 것은 아니다
 	선점형 커널에서는 가능함
 
-![](images/Pasted_image_20260110200921.png)
+![](images/Pasted_image_20260111211240.png)
 - 리눅스 커널 내부에서는 '1초에 틱이 몇 번 발생하는가'를 **HZ**라는 상수로 정의한다.
 	**HZ:** 시스템 설정에 따라 100, 250, 1000 등으로 설정된다. (예: HZ=1000이면 1ms마다 틱 발생)
 
