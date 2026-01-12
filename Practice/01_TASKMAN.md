@@ -46,7 +46,7 @@
 ```
 
 - 실행결과
-![](../images/Pasted_image_20260111200639.png)
+<br>![](../images/Pasted_image_20260111200639.png)
 TASK2(9)는 TASK1(10)에 우선순위가 밀려 출력되지 않음
 
 ****
@@ -82,7 +82,7 @@ TASK2(9)는 TASK1(10)에 우선순위가 밀려 출력되지 않음
 
 
 - 실행결과
-![](../images/Pasted_image_20260111203226.png)
+<br>![](../images/Pasted_image_20260111203226.png)
 
 - 왜 TASK1이 출력되지 않았을까?
 	TASK1이 실행되기 위해서는 `xTaskCreate()`로 task를 생성한 후 `osKernelStart()`로 스케쥴러를 동작시켜야 우선순위에 따라 task가 동작하게 되는데 TASKMAIN에서 `vTaskSuspend(xHandle1)`을 실행하여 TASK1을 강제로 일시정지 상태로 보냈기 때문에 TASK1이 실행되지 않았다.
@@ -183,10 +183,10 @@ printf("b"); fflush(stdout);	// 문자 'b' 출력
 <br>`#define TASK_3_PRIO		 8`
 
 - 여전히 TASK1의 우선순위가 TASK2보다 낮고 TASK2가 CPU를 점유하고 놔주지 않기 때문에 화면에는 'b'만 찍히게 된다.
-![](../images/Pasted_image_20260112223859.png)
+<br>![](../images/Pasted_image_20260112223859.png)
 
 - TASK1,2가 멀티태스킹을 하도록 `vTaskDelay(1000)` 함수의 주석을 해제 후 실행한다.
-![](../images/Pasted_image_20260112223914.png)
+<br>![](../images/Pasted_image_20260112223914.png)
 b->a->b->a를 반복해서 출력한다.
 
 - 결과 분석: 
@@ -201,10 +201,10 @@ b->a->b->a를 반복해서 출력한다.
 *이런 관계 때문에 IDLE TASK가 가장 많이 CPU를 점유하게 된다.*
 
 - `vTaskDelay(500)`: TASK1의 휴면시간을 500ms로 변경
-![](../images/Pasted_image_20260112224017.png)
+<br>![](../images/Pasted_image_20260112224017.png)
 
 - `vTaskDelay(500)`: TASK1의 휴면 시간을 100ms로 변경
-![](../images/Pasted_image_20260112224000.png)
+<br>![](../images/Pasted_image_20260112224000.png)
 
 - 결과분석:
     - 이전에는 동일하게 1000ms을 휴면 상태에 돌입했을 때는 우선순위에 밀려 'b'가 먼저 출력되다가 TASK1의 휴면시간을 줄임으로써 'a'가 먼저 출력되는 것을 알 수 있다. 
