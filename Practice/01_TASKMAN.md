@@ -209,3 +209,97 @@ b->a->b->a를 반복해서 출력한다.
 - 결과분석:
     - 이전에는 동일하게 1000ms을 휴면 상태에 돌입했을 때는 우선순위에 밀려 'b'가 먼저 출력되다가 TASK1의 휴면시간을 줄임으로써 'a'가 먼저 출력되는 것을 알 수 있다. 
     - 휴면 시간 500ms라는건 1초에 2번 쉬는 것이고, 휴면시간 100ms라는 것은 1초에 10번 쉬는 것이기 때문에 첫번째 경우에는 'aab'가 한 세트로 나왔고 두번째 경우에서는 'aaaaaaaaaab'(a 10개)가 한 세트로 나오게 되고 이를 통해 휴면시간과 실행 시간과의 관계를 명확하게 알 수 있다.
+
+## 우선순위 실습
+#### TASK1과 TASK2의 우선순위가 동일한 경우 동작 확인
+
+실습 방법
+- TASK1과 TASK2의 우선순위를 10으로 동일하게 설정
+- TODO1,2는 실행 안함.
+- TASK1,2의 vTaskdelay 주석처리
+
+예상 결과: a,b가 반복해서 출력될 것 같다.
+
+실습 결과
+<br>![](../images/Pasted_image_20260117133327.png)
+- b만 계속 출력되다가 중간에 a가 하나 출력됨 -> delay도 없고 우선순위도 같은데 왜 이런 방식으로 동작하는 것일까?
+
+- FreeRTOSConfig.h 파일에서 `configUSE_TIME_SLICING` 설정값을 1->0으로 변경하여 보자.
+
+출력 결과
+<br>![](../images/Pasted_image_20260117133756.png)
+- 원인을 알기 위해 `configUSE_TIME_SLICING`가 어떤 역할을 하는지 검색해보자.
+```c
+#if ( ( configUSE_PREEMPTION == 1 ) && ( configUSE_TIME_SLICING == 1 ) )
+		{
+			if( listCURRENT_LIST_LENGTH( &( pxReadyTasksLists[ pxCurrentTCB->uxPriority ] ) ) > ( UBaseType_t ) 1 )
+			{
+				xSwitchRequired = pdTRUE;
+			}
+			else
+			{
+				mtCOVERAGE_TEST_MARKER();
+			}
+		}
+```
+1. 코드 분석
+- 동작 조건: 이 조건문은 `configUSE_TIME_SLICING`이 1일 때만 컴파일에 포함된다.
+- 핵심 역할: 매 시스템 틱 인터럽트마다 현재 실행 중인 task와 같은 우선순위를 가진 다른 task가 Ready 리스트에 있는가를 확인하고, 존재한다면 `xSeitchRequired`를 `pdTRUE`로 설정하여 다음 태스크로 넘겨주는 역할을 한다.
+	
+2. 결과 분석
+	- `configUSE_PREEMPTION`은 1이므로 우선순위가 높은 task가 존재하면 언제든 뺏길 수 있다 -> 하지만 우선순위 동일함
+	- `configUSE_TIME_SLICING` 값을 0으로 변경했기 때문에 코드가 동작하지 않아 스케쥴러는 틱 인터럽트가 발생해도 같은 우선순위 태스크에게 양보를 고민하지 않았다.
+	- `vTaskDely()`가 없으므로 task가 스스로 CPU를 내려놓지도 않는다.
+- 따라서 먼저 CPU를 점유한 TASK1이 계속해서 CPU를 독점하며 'a'를 출력하게 된다.
+
+#### `fflush(stdout)` 주석처리 후 결과 확인
+- `configUSE_PREEMPTION 1` 
+- `configUSE_TIME_SLICING 1`
+- TASK1,2의 `fflush(stdout)`만 주석처리
+
+실습 결과
+<br>![](../images/Pasted_image_20260117142328.png)
+- 최초 예상했던 결과와 비슷한 결과를 얻을 수 있었다.
+
+- `printf()`
+	`printf("a");` 처럼 개행문자가 존재하지 않으면 printf는 값을 buffer에 적는다. 이 내용이 화면에 출력되려면 buffer가 가득 차야한다.
+	만약, `fflush(stdout)`을 실행하면 buffer가 가득차지 않았어도 강제로 buffer를 비우고 내용물을 출력한다. 이때, UART라는 하드웨어를 통해 화면에 출력하게 되는데 UART라는 장치는 굉장히 느린 장치이기 때문에 화면을 통해서만 결과를 확인하면 우리에게 우선순위가 같은데 서로 다른 시간 동안 cpu 점유를 한다고 착각하게 만든다.
+
+- `ffluch(stdout)`이 있을 때 하나의 task값만 많이 출력된 이유
+	task 2가 자기 시간(1ms) 동안 'b'를 buffer에  넣다가 1ms가 되어 task 1로 넘어가면,
+	task 1이 `printf("a"); fflush();`를 호출하게 된다. 그런데 UART 하드웨어는 아직 task 2가 맡겨놓은 'b'들을 전송하는중이다.
+	`fflush()`는 UART 하드웨어가 비워질 때까지 CPU를 붙잡고 있는다.
+    하드웨어가 비워지길 기다리는 동안 task 1에게 할당된 1ms가 거의 다 지나가 버린다. 결국 task 1은 'a'를 한두 번 찍자마자 다시 task 2에게 CPU를 뺏기게 된다.
+
+### `configUSE_IDLE_HOOK`
+> IDLE task가 얼마나 실행되는지 알기 위한 실습
+
+IDLE task는 자동으로 생성된다.
+
+- 동작 함수 
+```c
+void vApplicationIdleHook (void)
+{
+	printf("."); fflush(stdout);
+}
+```
+- 호출 부분
+```c
+#if ( configUSE_IDLE_HOOK == 1 )
+{
+    // 외부(사용자 코드)에 정의된 vApplicationIdleHook 함수를 가져온다.
+    extern void vApplicationIdleHook( void );
+
+    /* 아이들 태스크 내부에서 사용자 정의 함수를 호출한다.
+       이를 통해 애플리케이션 설계자는 별도의 태스크를 생성하는 오버헤드 없이
+       백그라운드 기능을 추가할 수 있다. */
+
+    /* 주의: vApplicationIdleHook()은 어떠한 상황에서도
+       블록(Block) 상태가 될 가능성이 있는 함수를 호출해서는 안 된다. */
+    vApplicationIdleHook();
+}
+#endif /* configUSE_IDLE_HOOK */
+```
+
+실습 결과
+<br>![](../images/Pasted_image_20260117145157.png)

@@ -1,33 +1,3 @@
-## 태스크의 형태
-
-### 유형 1. 무한루프 함수
-
-```c
-void YourTask(void *pvParameters)
-{
-	for(;;){
-		Call one of FreeRTOS's services:
-		vTaskDelay();
-		vTaskSuspend();
-		vTaskPrioritySet();
-		vTaskResume();
-	}
-}
-```
-
-### 유형2. 실행 후 스스로를 삭제하는 함수
-
-```c
-void YourTask(void *pvParameters)
-{
-	vTaskDelete(NULL);
-}
-```
-
-task는 절대 return하면 안되기 때문에 항상 'void'로 return형을 사용한다. **임베디드 시스템에서 태스크는 '프로그램 그 자체'가 아니라 '시스템이 관리하는 무한 루프 서비스'이다.** tasl가 return한다는 것은 해당 서비스를 관리하는 스택(Stack) 정보와 제어권이 갈 곳을 잃어버린다는 뜻이며, 이는 곧 시스템 크래시(Crash)로 이어진다.
-
-****
-
 ## CMSIS
 >서로 다른 제조사가 만든 ARM Cortex 기반 칩들을 똑같은 방식으로 제어할 수 있게 만든 표준화된 통역 도구.
 
