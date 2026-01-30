@@ -76,6 +76,8 @@ int buyTicket(void)
 	- `taskENTER_CRITICAL()`을 호출하면 CPU의 인터럽트가 금지된다 
 	- 인터럽트가 금지되면 Tick Interrupt가 발생하지 않아 Context Switch도 일어나지 않는다.
 	- 즉, 해당 구간은 현재 실행중인 태스크가 CPU를 독점하게 된다.
+-----------------------
+<br>
 
 # TODO #3
 
