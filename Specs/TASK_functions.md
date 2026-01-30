@@ -99,7 +99,6 @@ void MyTask (void *pdata)
 - 삭제할 수 없는 태스크이다.
 - `vTaskStartScheduler()`에서 생성된다. 시스템이 켜지면 커널이 자동으로 생성한다.
 - `vApplicationIdleHook()`: Idle Task가 실행될 때마다 호출하는 콜백 함수이다. 내부에 CPU 저전력 모드 명령어를 포함한다.
-	-> 콜백 함수: 어떤 이벤트가 발생했을 때 시스템이 나 대신 호출해 주도록 미리 등록해둔 함수.
 ```c
 static portTASK_FUNCTION( prvIdleTask, pvParameters ) 
 { 
