@@ -93,3 +93,42 @@ void MyTask (void *pdata)
 	예를 들어, 모터 제어 태스크가 10ms마다 돌도록 하였을 때, 연산을 하느라 어떤 때는 2ms, 어떤 때는 5ms를 사용한다면 `vTaskDelay(10)`을 사용하면 매번 주기가 밀리게 되지만 `vTaskDelayUntil(10)`을 사용한다면 연산 시간과 상관 없이 정확히 10ms의 주기를 지킬 수 있다.
 
 한 줄 요약: 실행 시간의 변동과 상관없이 태스크가 고정된 주기로 실행되도록 보장하는 함수이다.
+
+### IDLE task
+- `prvIdleTask()` 함수는 우선순위 0으로 최하위 우선순위이다.
+- 삭제할 수 없는 태스크이다.
+- `vTaskStartScheduler()`에서 생성된다. 시스템이 켜지면 커널이 자동으로 생성한다.
+- `vApplicationIdleHook()`: Idle Task가 실행될 때마다 호출하는 콜백 함수이다. 내부에 CPU 저전력 모드 명령어를 포함한다.
+	-> 콜백 함수: 어떤 이벤트가 발생했을 때 시스템이 나 대신 호출해 주도록 미리 등록해둔 함수.
+```c
+static portTASK_FUNCTION( prvIdleTask, pvParameters ) 
+{ 
+	for( ;; ) 
+	{ 
+		#if ( configUSE_PREEMPTION == 0 ) 
+		{ 
+			taskYIELD(); 
+		} 
+		#endif /* configUSE_PREEMPTION */ 
+		#if ( ( configUSE_PREEMPTION == 1 ) && ( configIDLE_SHOULD_YIELD == 1 ) ) 
+		{ 
+		#if ( configUSE_IDLE_HOOK == 1 ) 
+		{ 
+			vApplicationIdleHook(); 
+		} 
+	#endif /* configUSE_IDLE_HOOK */ 
+	}
+}
+```
+
+- `Idle Hook()` 함수 예시
+```c
+void vApplicationIdleHook (void)
+{
+	printf("."); fflush(stdout);
+}
+```
+- `lde Hook` 사용 시 주의사항:
+1. **절대 차단 금지**: 이 함수 안에서 `vTaskDelay()`나 세마포어 대기를 하면 안된다. Idle Task 자체가 멈춰버리면 시스템 전체가 마비될 수 있다.
+2. **빠른 실행**: 여기서 너무 긴 연산을 하면 안된다. 다른 태스크가 실행되어야 할 때 즉시 비켜줄 수 있을 정도의 짧은 작업만 해야 한다.
+3. **설정 확인:** `FreeRTOSConfig.h`에서 `#define configUSE_IDLE_HOOK 1`로 설정되어 있어야만 동작한다.

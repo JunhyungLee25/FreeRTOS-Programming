@@ -96,6 +96,18 @@ void vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskName)
 ## TCB(Task Control Blcok)
 >TCB는 태스크의 모든 정보를 담고 있는 block이다.
 
+- 태스크 당 각 1개의 TCB(TCB_t)를 갖는다
+- 태스크가 다시 CPU 사용권을 받을 때 TCB에 저장했던 데이터를 이용해서 마지막으로 실행했던 부분부터 코드를 정확히 재개한다.
+- TCB_t의 내부 구성
+	- `pxTopOfStack` : 현재 태스크가 마지막으로 사용한 스택의 위치
+	- `uxPriority`: 태스크 우선순위
+	- `pxStack`: 태스크 스택의 시작 주소
+	- `pcTaskName`: 태스크 제목
+	- `pxEndOfStack`: 태스크 스택의 마지막 주소
+	- `uxTCBNumber`: TCB 구조체 일련 번호
+	- `uxTaskNumber`: 사용자 정의형 태스크 번호
+	- `uxBasePriority`: Mutex’s PIP(Priority Inheritance Priority)
+
 FreeRTOS에서 태스크를 생성하면, 커널은 이 태스크를 관리하기 위해 메모리에 TCB라는 구조체를 하나 만든다.
 - TCB의 역할: 태스크의 이름, 우선순위, 현재 상태, 그리고 가장 중요한 **스택 포인터** 정보를 저장한다.
 ### TASK의 정보 얻어오기 
@@ -114,3 +126,23 @@ FreeRTOS에서 태스크를 생성하면, 커널은 이 태스크를 관리하�
 - **Context 복원 (Restore)**: 태스크 B의 TCB에 적힌 스택 위치로 가서, 예전에 저장해뒀던 값들을 CPU 레지스터에 다시 로드한다. 
 
 한 줄 요약: TCB는 각 태스크의 우선순위와 스택 포인터를 포함한 모든 상태 정보를 저장하여, CPU가 작업을 중단 했거나 나중에 정확히 그 지점부터 다시 실행할 수 있게 해주는 태스크 전용 업무 일지이다.
+
+****
+
+### TCB 메모리 최적화
+TCB_t 구조체에서 어떤 필드는 조건부 컴파일로 싸여져 있다.
+이를 이용하면 사용하지 않는 기능의 필드를 조건부 컴파일로 제거하여 메모리의 크기를 절약할 수 있다.
+
+- `task.c` 
+```c
+#if ( configUSE_TRACE_FACILITY == 1 )
+
+UBaseType_t uxTCBNumber; /*< Stores a number that increments each time a TCB is created. It allows debuggers to determine when a task has been deleted and then recreated. */
+
+UBaseType_t uxTaskNumber; /*< Stores a number specifically for use by third party trace code. */
+
+#endif
+```
+- 코드 의미: `configUSE_TRACE_FACILITY == 1`일 때만 `uxTCBNumber`, `uxTaskNumber` 필드를 메모리에 할당하겠다.
+- 최적화 효과: 만약 이 값이 '0'이라면, 각 태스크마다 약 8바이트(32비트 아키텍쳐 기준)의 RAM을 아낄 수 있다.
+- 조건부 컴파일: `#if, #endif`를 사용하여 런타임에 메모리를 체크하는 것이 아닌 컴파일 타임에 결정하기 때문에 성능과 메모리 모두에서 이득을 본다.

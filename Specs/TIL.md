@@ -25,7 +25,7 @@ scalability mode: 이 모드가 활성화되면 다음 기능들이 제한될 �
 [CMSIS,HAL](./CMSIS,HAL.md)
 
 ### 2026-01-14
-[Introduction to FreeRTOS](./Introduction_to_FreeRTOS.md) 
+[Introduction to FreeRTOS](../Theory/Introduction_to_FreeRTOS.md) 
 ### 2026-01-17
 
 FreeRTOSConfig_base.h와 FreeRTOSConfig.h 사이 관계.
@@ -85,19 +85,37 @@ FreeRTOSConfig_base.h와 FreeRTOSConfig.h 사이 관계.
     - **역할:** 실제 실행 중인 **개별 Task**가 자신의 로컬 변수를 저장하거나 함수를 호출할 때 사용한다.
     - **위치:** FreeRTOS 힙 영역(보통 `.bss` 섹션 내의 `ucHeap` 배열)에서 할당받는다. 앞서 MAP 파일에서 확인한 $0x2000....$ 영역에 위치하는 이유이다.
 
-<br>[Task_and_Stack_memory](./Task_and_Stack_memory.md): 메모리 단편화 추가
-<br>[02_STACKOVERFLOW](../Practice/02_STACKOVERFLOW.md): 실습 내용 정리
+<br>[Task_and_Stack_memory](../Theory/Task_and_Stack_memory.md): 메모리 단편화 추가
+<br>[02_STACKOVERFLOW](../Labs/02_STACKOVERFLOW.md): 실습 내용 정리
 
 ### 2026-01-26
-[TASK_함수_모음](./TASK_함수_모음.md) 작성
+[TASK_함수_모음](./TASK_functions.md) 작성
 	<br>- vTaskDelet()
 	<br>- vTaskPrioritySet()
 	<br>- vTaskGetTaskInfo()
 	<br>- vTaskDelay()
 	<br>- vTaskDelayUntil()
-<br>[Task and Stack memory](./Task_and_Stack_memory.md): TCB, stack 메모리 크기 최적화, 런타임 스택 검사 방법 2가지 내용 추가
-<br>[PreFix 모음](./Prefix_모음.md)
+<br>[Task and Stack memory](../Theory/Task_and_Stack_memory.md): TCB, stack 메모리 크기 최적화, 런타임 스택 검사 방법 2가지 내용 추가
+<br>[Naming_rules](./Naming_rules.md)
 <br>[FreeRTOSConfig_base.h](./FreeRTOSConfig_base.h.md) : `INCLUDE_` 상수 관련 내용 작성
-<br>[NVIC](./NVIC.md) : NVIC 및 SysTick 내용 작성
-<br>[임계 영역(Critical Section)](./CRITICAL_SECTION.md)
+<br>[NVIC](../Theory/NVIC.md) : NVIC 및 SysTick 내용 작성
+<br>[임계 영역(Critical Section)](../Theory/CRITICAL_SECTION.md)
 <br>함수 매뉴얼 작성:[taskENTER_CRITICAL()](../FreeRTOS_reference_Manual/taskENTER_CRITICAL().md), [taskEXIT_CRITICAL()](../FreeRTOS_reference_Manual/taskEXIT_CRITICAL().md)
+
+### 2026-01-30
+[Task and Stack memory](../Theory/Task_and_Stack_memory.md): TCB 내용 추가
+<br>[Context Switching](../Theory/Context_Switching.md)
+<br>[Clock Tick](./Clock_Tick.md)
+- FreeRTOS의 버전 확인 방법 (task.h)
+```c
+#define tskKERNEL_VERSION_NUMBER "V10.2.0"
+#define tskKERNEL_VERSION_MAJOR 10
+#define tskKERNEL_VERSION_MINOR 2
+#define tskKERNEL_VERSION_BUILD 0
+```
+- 문맥저장 & 문맥복원 간단 정리(A->B->A)
+1. 문맥 저장: 현재 실행중인 태스크 A에서 B로 전환될 때 발생하며 현재 CPU가 작업하던 레지스터의 모든 정보를 현재 태스크의 스택에 차례대로 저장한 후 가장 상단인 SP 위치를 해당 태스크의 제어 블록에 저장한다.
+2. 문맥 복원: CPU의 SP 레지스터를 태스크 B가 이전에 저장해두었떤 SP주소로 점프시킨다. 해당 SP 위치부터 스택에 쌓여있던 정보를 pop하여 CPU의 실제 레지스터로 하나씩 꺼내온다. 마지막으로 PC 값이 복원되면, 태스크 B는 이전에 멈췄던 바로 그 지점부터 다시 실행을 시작한다. 
+
+- 콜백 함수: 어떤 이벤트가 발생했을 때 시스템이 나 대신 호출해 주도록 미리 등록해둔 함수이다.
+<br>즉, 액티브 함수가 아닌 패시브 함수이다.
