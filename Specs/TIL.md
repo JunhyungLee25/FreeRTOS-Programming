@@ -122,3 +122,7 @@ FreeRTOSConfig_base.h와 FreeRTOSConfig.h 사이 관계.
 
 ### 2026-02-02
 [04_coROUTINE](../Labs/04_coROUTINE.md), [coRoutine](../Theory/co-Routine.md) : coRoutine 실습 과정 및 이론 정리.
+
+[08_DEFERRED_INTERRUPT](../Labs/08_DEFERRED_INTERRUPT.md) [Deferred Interrupt](../Theory/Defferred_Interrupt.md): 지연된 인터럽트 실습 및 이론 정리 
+
+[xHigherPriorityTaskWoken()](../FreeRTOS_reference_Manual/xHigherPriorityTaskWoken().md) 매뉴얼 작성
