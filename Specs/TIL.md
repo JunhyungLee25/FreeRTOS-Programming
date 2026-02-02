@@ -119,3 +119,6 @@ FreeRTOSConfig_base.h와 FreeRTOSConfig.h 사이 관계.
 
 - 콜백 함수: 어떤 이벤트가 발생했을 때 시스템이 나 대신 호출해 주도록 미리 등록해둔 함수이다.
 <br>즉, 액티브 함수가 아닌 패시브 함수이다.
+
+### 2026-02-02
+[04_coROUTINE](../Labs/04_coROUTINE.md), [coRoutine](../Theory/co-Routine.md) : coRoutine 실습 과정 및 이론 정리.
