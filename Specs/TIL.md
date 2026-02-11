@@ -140,3 +140,29 @@ FreeRTOSConfig_base.h와 FreeRTOSConfig.h 사이 관계.
 - 인터럽트의 이해 및 올바른 사용
 	인터럽트에 대한 오해: 인터럽트는 빠르게 처리해야만 하는 명령이 아닌 예외상황이 발생하여 처리가 필요한 경우 마이크로프로세서에게 알려 처리할 수 있도록 하는 역할이다. (사람으로 따지면 작업중에 전화가 오는 경우).
 	따라서 무조건 빠르게 처리해야만 하는 메커니즘 보다는 제시간 안에 처리해야하는 메커니즘으로 이해하자.
+
+	### 2026-02-11
+[05_SEMAPHORE, 06_COUNT_SEM](../Labs/05_SEMAPHORE_06_COUNT_SEM.md)
+<br>[Semaphore](../Theory/Semaphore.md)
+
+<br>- `.word Reset_Handler`
+```c
+Reset_Handler:  
+  ldr   sp, =_estack      /* set stack pointer */
+
+/* Call the clock system initialization function.*/
+  bl  SystemInit   
+
+/* Copy the data segment initializers from flash to SRAM */  
+  ldr r0, =_sdata
+  ldr r1, =_edata
+  ldr r2, =_sidata
+  movs r3, #0
+  b LoopCopyDataInit
+```
+디버깅 모드 실행 시 Reset_Handler가 동작하고 코드를 그대로 실행한다.
+<br>또한 디버깅 모드 실행시 `HAL_Init()`까지 실행되고 멈추는데 이 위치가 Debug configurations에서 main까지로 미리 설정되어 있기 때문이다. 
+<br>(set breakpoint at: main)
+<br>![](../images/Pasted_image_20260211203028.png)
+
+[Interrupt vector table](./Interrupt_vector_table.md)
