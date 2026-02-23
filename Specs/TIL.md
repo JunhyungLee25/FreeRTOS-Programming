@@ -212,4 +212,14 @@ void vATask( void * pvParameters ) {
 - **동작**: 데이터가 들어온 순서대로 차곡차곡 쌓입니다 (**FIFO**). 수신측이 조금 늦게 읽더라도 큐의 크기만큼은 데이터가 안전하게 보관된다.
 
 [xSemaphoreCreateMutex()](../FreeRTOS_reference_Manual/xSemaphoreCreateMutex().md)
-[07_MUTEX](../Labs/07_MUTEX.md)
+<br>[07_MUTEX](../Labs/07_MUTEX.md)
+
+[이벤트 플래그](../Theory/Event_Flag.md)
+<br>[xEventGroupCreate()](../FreeRTOS_reference_Manual/xEventGroupCreate().md)
+- `configUSE_16_BIT_TICKS`가 0인 경우 32비트가 아니고 24비트인 이유: 나머지 비트들은 OS가 태스크 제어용 내부 플래그로 사용하기 때문이다.
+
+<br>[vEventGroupDelete()](../FreeRTOS_reference_Manual/vEventGroupDelete().md)
+- 이벤트 그룹이 삭제되면 해당 태스크들은 0을 반환받으며 깨어나게 되는데, 조건이 맞아 깨어난것인지 이벤트 그룹이 삭제되어 깨어난것인지 확인하기 위한 예외처리 코드를 작성해 주거나 해당 이벤트 플래그를 사용하고 있는 모든 태스크를 먼저 삭제해야한다. -> 가급적 사용하지 않는 것이 바람직함.
+
+[xEventGroupSetBits()](../FreeRTOS_reference_Manual/xEventGroupSetBits().md): 특정 비트를 1로 설정하는 역할
+<br> [xEventGroupWaitBits()](../FreeRTOS_reference_Manual/xEventGroupWaitBits().md): 특정 비트가 조건을 충족할 때 까지 대기하는 역할
