@@ -166,3 +166,50 @@ Reset_Handler:
 <br>![](../images/Pasted_image_20260211203028.png)
 
 [Interrupt vector table](./Interrupt_vector_table.md)
+
+#### 2026-02-23
+
+##### FreeRTOS 서비스 함수 사용시 주의 사항
+- 각종 FreeRTOS 서비스 함수를 사용 할 시 각 함수의 리턴값을 확인하는 습관을 들여야한다.
+
+예를 들어 `xSemaphore = xSemaphoreCreateBinary(1)`의 경우 semaphore 객체 할당에 실패할 경우 리턴값으로 `NULL`을 전달한다. 
+즉, 아래 코드와 같이  `xSemaphore == NULL`인 경우에 처리를 위한 코드를 삽입해야한다.
+
+```c
+/* 세마포어의 제어권을 담을 핸들 변수를 선언합니다. */
+SemaphoreHandle_t xSemaphore; 
+
+void vATask( void * pvParameters ) { 
+    /* 이진 세마포어(Binary Semaphore) 생성을 시도합니다. */ 
+    xSemaphore = xSemaphoreCreateBinary(); 
+
+    /* 세마포어가 정상적으로 생성되지 않았을 경우 (NULL 반환) */
+    if( xSemaphore == NULL ) { 
+        /* FreeRTOS의 힙(Heap) 메모리가 부족하여 세마포어를 성공적으로 생성하지 못했습니다. 이 경우 시스템 설계를 다시 확인하거나 메모리 할당량을 늘려야 합니다. */  
+    } 
+    /* 성공적으로 생성되었을 경우 */
+    else { 
+        /* 여기서부터 세마포어를 이용한 동기화나 상호배제 로직을 작성합니다. */
+        ...
+    }
+}
+```
+
+### 메시지 메일박스 (Message Mailbox)
+
+- **공간**: 딱 **1개** (포인터나 데이터 1개를 담을 수 있는 Slot).
+    
+- **특징**: 최신 정보를 갱신하는 용도로 자주 쓰인다.
+    
+- **동작**: 새 데이터가 오면 기존 데이터를 **덮어쓰거나**, 기존 데이터가 나갈 때까지 **기다려야** 한다.
+    
+### 메시지 큐 (Message Queue)
+
+- **공간**: 사용자가 설정한 여러 개의 Slot.
+    
+- **특징**: 데이터가 몰려와도 순서대로 다 처리해야 할 때 쓴다.
+    
+- **동작**: 데이터가 들어온 순서대로 차곡차곡 쌓입니다 (**FIFO**). 수신측이 조금 늦게 읽더라도 큐의 크기만큼은 데이터가 안전하게 보관된다.
+
+[xSemaphoreCreateMutex()](../FreeRTOS_reference_Manual/xSemaphoreCreateMutex().md)
+[07_MUTEX](../Labs/07_MUTEX.md)
