@@ -223,3 +223,8 @@ void vATask( void * pvParameters ) {
 
 [xEventGroupSetBits()](../FreeRTOS_reference_Manual/xEventGroupSetBits().md): 특정 비트를 1로 설정하는 역할
 <br> [xEventGroupWaitBits()](../FreeRTOS_reference_Manual/xEventGroupWaitBits().md): 특정 비트가 조건을 충족할 때 까지 대기하는 역할
+
+#### 2026-02-24
+
+[메시지 큐](../Theory/Message_Queue.md)
+<br>[11_QUEUE](../Labs/11_QUEUE.md)

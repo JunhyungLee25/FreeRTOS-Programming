@@ -24,10 +24,10 @@
 
 | **함수명**                     | **역할**       | **주요 특징**                          |
 | --------------------------- | ------------ | ---------------------------------- |
-| **`xEventGroupCreate()`**   | 이벤트 그룹 생성    | 힙 메모리 할당, 핸들 반환. ISR 호출 불가.        |
-| **`xEventGroupSetBits()`**  | 특정 비트를 1로 설정 | 비트 설정 즉시 대기 중인 태스크 확인. ISR용 별도 존재. |
-| **`xEventGroupWaitBits()`** | 특정 비트 대기     | AND/OR 조건 설정, 타임아웃 지정 가능.          |
-| **`vEventGroupDelete()`**   | 이벤트 그룹 삭제    | 메모리 해제, 대기 중인 태스크는 0을 반환하며 깨어남.    |
+| [xEventGroupCreate()](../FreeRTOS_reference_Manual/xEventGroupCreate().md)   | 이벤트 그룹 생성    | 힙 메모리 할당, 핸들 반환. ISR 호출 불가.        |
+| [xEventGroupSetBits()](../FreeRTOS_reference_Manual/xEventGroupSetBits().md)  | 특정 비트를 1로 설정 | 비트 설정 즉시 대기 중인 태스크 확인. ISR용 별도 존재. |
+| [xEventGroupWaitBits()](../FreeRTOS_reference_Manual/xEventGroupWaitBits().md) | 특정 비트 대기     | AND/OR 조건 설정, 타임아웃 지정 가능.          |
+| [vEventGroupDelete()](../FreeRTOS_reference_Manual/vEventGroupDelete().md)   | 이벤트 그룹 삭제    | 메모리 해제, 대기 중인 태스크는 0을 반환하며 깨어남.    |
 
 ## 4. 세마포어 vs 이벤트 플래그 비교
 
