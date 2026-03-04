@@ -22,11 +22,14 @@
 4. `Ctrl+S`를 눌러 코드를 생성한다.
 
 - 원래 핀 설정값
-![](../images/Pasted_image_20260226152334.png)
+<br>![](../images/Pasted_image_20260226152334.png)
+
 - I2C1 활성화 시 핀 설정값
-![](../images/Pasted_image_20260226152658.png)
+<br>![](../images/Pasted_image_20260226152658.png)
+
 - PB8(I2C1_SCL)로 변경
-![](../images/Pasted_image_20260226152734.png)
+<br>![](../images/Pasted_image_20260226152734.png)
+
 # LDC 화면 출력하기
 
 ## 1. HD44780란?
@@ -126,10 +129,10 @@ static void DelayUS(uint32_t us) {
 
 ---
 
-## 5. 학습 포인트 및 향후 대책 (Best Practices)
+## 5. 학습 포인트 및 향후 대책 
 
 1. **로그(Log)의 중요성**: `printf`를 단계별로 찍어보지 않았다면 어느 함수에서 멈췄는지 찾기 매우 어려웠을 것임.
     
-2. **Safety Break**: 무한 루프(`while`)를 사용할 때는 반드시 탈출 조건(Timeout)을 고려해야 함.
+2. **Safety Break**: 무한 루프를 사용할 때는 반드시 탈출 조건을 고려해야 함.
     
-3. **BSP의 핵심**: 제조사가 제공하는 라이브러리도 내 보드 환경(Clock, DWT 활성 여부 등)과 맞지 않을 수 있음을 항상 의심해야 함.
+3. **핵심**: 제조사가 제공하는 라이브러리도 내 보드 환경(Clock, DWT 활성 여부 등)과 맞지 않을 수 있음을 항상 의심해야 함.

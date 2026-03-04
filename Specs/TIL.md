@@ -228,3 +228,10 @@ void vATask( void * pvParameters ) {
 
 [메시지 큐](../Theory/Message_Queue.md)
 <br>[11_QUEUE](../Labs/11_QUEUE.md)
+
+#### 2026-03-04
+
+[Soft timer](../Theory/Soft_timer.md)
+<br>[Deadlock](../Theory/Deadlock.md)
+
+완강!!
